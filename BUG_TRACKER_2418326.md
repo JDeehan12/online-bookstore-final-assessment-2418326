@@ -39,4 +39,21 @@
 
 ---
 
+### [BUG-003] Floating Point Precision in Cart Total Calculation
+**Status**: Identified
+**Location**: `models.py` - `Cart.get_total_price()` method
+**Discovered**: Unit testing - 3rd October 2025
+**Reproduction Steps**:
+1. Add item with large quantity (1000) to cart
+2. Calculate total price
+3. Observe floating-point precision error
+
+**Expected Behaviour**: Accurate price calculation even with large quantities
+**Actual Behaviour**: Floating-point arithmetic errors accumulate (10990.0 vs 10989.999999999825)
+**Priority**: Minor (cosmetic, but indicates deeper inefficiency issue)
+**Fix Status**: Pending
+**Related**: INEFFICIENCY #1 - nested loop amplifies precision errors
+
+---
+
 *Additional bugs will be documented as discovered through systematic testing*
