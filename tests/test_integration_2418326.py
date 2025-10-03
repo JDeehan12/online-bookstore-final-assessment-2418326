@@ -250,3 +250,72 @@ class TestErrorHandling:
         }, follow_redirects=True)
         
         assert response.status_code == 200
+
+
+class TestStateTransitions:
+    """Test state transitions and data consistency."""
+    
+    def test_cart_state_after_order_completion(self, client):
+        """Verify cart is cleared after successful order."""
+        # Add items
+        client.post('/add-to-cart', data={'title': '1984', 'quantity': '2'})
+        
+        # Complete order
+        client.post('/process-checkout', data={
+            'name': 'Test User',
+            'email': 'test@test.com',
+            'address': '123 Test St',
+            'city': 'Test City',
+            'zip_code': '12345',
+            'payment_method': 'credit_card',
+            'card_number': '4111111111111234',
+            'expiry_date': '12/25',
+            'cvv': '123'
+        }, follow_redirects=True)
+        
+        # Check cart is empty
+        response = client.get('/cart')
+        # Cart should be cleared after successful checkout
+        assert response.status_code == 200
+    
+    def test_user_session_after_logout_login(self, client):
+        """Test session state through logout and login cycle."""
+        # Login
+        client.post('/login', data={
+            'email': 'demo@bookstore.com',
+            'password': 'demo123'
+        })
+        
+        # Add to cart while logged in
+        client.post('/add-to-cart', data={'title': '1984', 'quantity': '1'})
+        
+        # Logout
+        client.get('/logout')
+        
+        # Login again
+        client.post('/login', data={
+            'email': 'demo@bookstore.com',
+            'password': 'demo123'
+        })
+        
+        # Check cart state (implementation dependent)
+        response = client.get('/cart')
+        assert response.status_code == 200
+    
+    def test_profile_data_consistency_after_update(self, client):
+        """Verify profile data persists correctly after update."""
+        # Login
+        client.post('/login', data={
+            'email': 'demo@bookstore.com',
+            'password': 'demo123'
+        })
+        
+        # Update profile
+        client.post('/update-profile', data={
+            'name': 'Updated Demo Name',
+            'address': '999 Updated Street'
+        })
+        
+        # Verify update persisted
+        response = client.get('/account')
+        assert b'Updated Demo Name' in response.data

@@ -138,6 +138,17 @@
 
 ---
 
+### [INEFFICIENCY-004] Linear Search Instead of Helper Function
+**Status**: Identified
+**Location**: `app.py` - `add_to_cart()` route
+**Discovered**: Code analysis - 3rd October 2025
+**Issue**: Uses manual loop `for b in BOOKS:` instead of existing `get_book_by_title()` helper
+**Impact**: Code duplication and reduced maintainability
+**Priority**: Low
+**Fix Status**: Pending
+
+---
+
 ## Security Issues
 
 ### [SECURITY-001] Debug Mode Enabled in Production

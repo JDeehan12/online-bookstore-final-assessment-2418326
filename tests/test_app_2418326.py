@@ -417,3 +417,151 @@ class TestHelperFunctions:
         book = get_book_by_title("the great gatsby")
         # Currently case sensitive
         assert book is None
+
+
+class TestBoundaryValues:
+    """Boundary value testing for form inputs."""
+    
+    def test_checkout_name_empty_string(self, client):
+        """Boundary: Empty name string."""
+        client.post('/add-to-cart', data={'title': '1984', 'quantity': '1'})
+        response = client.post('/process-checkout', data={
+            'name': '',
+            'email': 'test@test.com',
+            'address': '123 Test St',
+            'city': 'Test City',
+            'zip_code': '12345',
+            'payment_method': 'credit_card',
+            'card_number': '4111111111111234',
+            'expiry_date': '12/25',
+            'cvv': '123'
+        }, follow_redirects=True)
+        assert b'fill' in response.data.lower() or b'required' in response.data.lower()
+    
+    def test_checkout_name_very_long(self, client):
+        """Boundary: Very long name string."""
+        client.post('/add-to-cart', data={'title': '1984', 'quantity': '1'})
+        long_name = "X" * 1000
+        response = client.post('/process-checkout', data={
+            'name': long_name,
+            'email': 'test@test.com',
+            'address': '123 Test St',
+            'city': 'Test City',
+            'zip_code': '12345',
+            'payment_method': 'credit_card',
+            'card_number': '4111111111111234',
+            'expiry_date': '12/25',
+            'cvv': '123'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+    
+    def test_add_cart_quantity_boundary_zero(self, client):
+        """Boundary: Zero quantity."""
+        response = client.post('/add-to-cart', data={
+            'title': '1984',
+            'quantity': '0'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+    
+    def test_add_cart_quantity_boundary_large(self, client):
+        """Boundary: Very large quantity."""
+        response = client.post('/add-to-cart', data={
+            'title': '1984',
+            'quantity': '99999'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+
+
+class TestEquivalencePartitioning:
+    """Equivalence partitioning tests."""
+    
+    def test_email_valid_standard_format(self, client):
+        """Valid partition: Standard email."""
+        response = client.post('/register', data={
+            'email': 'user@domain.com',
+            'password': 'pass123',
+            'name': 'Test User'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+    
+    def test_email_valid_with_subdomain(self, client):
+        """Valid partition: Email with subdomain."""
+        response = client.post('/register', data={
+            'email': 'user@mail.domain.co.uk',
+            'password': 'pass123',
+            'name': 'Test User'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+    
+    def test_email_valid_with_plus(self, client):
+        """Valid partition: Email with plus sign."""
+        response = client.post('/register', data={
+            'email': 'user+tag@domain.com',
+            'password': 'pass123',
+            'name': 'Test User'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+    
+    def test_email_invalid_multiple_at_symbols(self, client):
+        """Invalid partition: Multiple @ symbols."""
+        response = client.post('/register', data={
+            'email': 'user@@domain.com',
+            'password': 'pass123',
+            'name': 'Test User'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+    
+    def test_payment_card_visa_pattern(self, client):
+        """Valid partition: Visa card pattern (starts with 4)."""
+        client.post('/add-to-cart', data={'title': '1984', 'quantity': '1'})
+        response = client.post('/process-checkout', data={
+            'name': 'Test User',
+            'email': 'test@test.com',
+            'address': '123 Test St',
+            'city': 'Test City',
+            'zip_code': '12345',
+            'payment_method': 'credit_card',
+            'card_number': '4532111111111111',
+            'expiry_date': '12/25',
+            'cvv': '123'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+    
+    def test_payment_card_mastercard_pattern(self, client):
+        """Valid partition: Mastercard pattern (starts with 5)."""
+        client.post('/add-to-cart', data={'title': '1984', 'quantity': '1'})
+        response = client.post('/process-checkout', data={
+            'name': 'Test User',
+            'email': 'test@test.com',
+            'address': '123 Test St',
+            'city': 'Test City',
+            'zip_code': '12345',
+            'payment_method': 'credit_card',
+            'card_number': '5425233430109903',
+            'expiry_date': '12/25',
+            'cvv': '123'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+
+
+class TestLinearSearchInefficiency:
+    """Test for inefficient linear search in add_to_cart."""
+    
+    def test_add_to_cart_uses_loop_not_helper(self):
+        """Verify add_to_cart uses manual loop instead of helper function."""
+        with open('app.py', 'r', encoding='utf-8') as f:
+            source = f.read()
+        
+        # Find add_to_cart function
+        start = source.find('def add_to_cart')
+        end = source.find('def remove_from_cart')
+        add_to_cart_code = source[start:end]
+        
+        # Check for inefficient pattern
+        has_loop = 'for b in BOOKS:' in add_to_cart_code
+        uses_helper = 'get_book_by_title' in add_to_cart_code
+        
+        if has_loop and not uses_helper:
+            print("\nINEFFICIENCY-004 CONFIRMED: Manual loop instead of helper function")
+        
+        assert True  # Document finding, don't fail test

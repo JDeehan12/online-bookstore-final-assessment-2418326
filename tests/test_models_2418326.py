@@ -89,6 +89,18 @@ class TestCartItem:
         expected = 10.99 * 1000
         assert item.get_total_price() == expected
 
+    def test_book_title_empty_string_boundary(self):
+        """Boundary test: Empty title string."""
+        book = Book("", "Fiction", 10.99, "/test.jpg")
+        assert book.title == ""
+    
+    def test_book_title_very_long_string(self):
+        """Boundary test: Very long title."""
+        long_title = "A" * 500
+        book = Book(long_title, "Fiction", 10.99, "/test.jpg")
+        assert book.title == long_title
+        assert len(book.title) == 500
+
 
 class TestCart:
     """Test cases for the Cart class."""
@@ -270,6 +282,38 @@ class TestCart:
         """Positive test: Cart is empty after clearing."""
         cart_with_items.clear()
         assert cart_with_items.is_empty() is True
+    
+    # Boundary Value Tests
+    def test_add_book_boundary_quantity_one(self, empty_cart, sample_books):
+        """Boundary test: Minimum valid quantity."""
+        empty_cart.add_book(sample_books[0], 1)
+        assert empty_cart.items[sample_books[0].title].quantity == 1
+    
+    def test_add_book_boundary_quantity_max_reasonable(self, empty_cart, sample_books):
+        """Boundary test: Large but reasonable quantity."""
+        empty_cart.add_book(sample_books[0], 9999)
+        assert empty_cart.items[sample_books[0].title].quantity == 9999
+    
+    def test_cart_total_boundary_zero_price(self):
+        """Boundary test: Book with zero price."""
+        cart = Cart()
+        book = Book("Free Book", "Education", 0.00, "/test.jpg")
+        cart.add_book(book, 5)
+        assert cart.get_total_price() == 0.00
+    
+    def test_cart_total_boundary_pence(self):
+        """Boundary test: Minimum price (one pence)."""
+        cart = Cart()
+        book = Book("Cheap Book", "Budget", 0.01, "/test.jpg")
+        cart.add_book(book, 1)
+        assert cart.get_total_price() == 0.01
+    
+    def test_cart_total_boundary_large_price(self):
+        """Boundary test: Very expensive book."""
+        cart = Cart()
+        book = Book("Rare Book", "Collector", 9999.99, "/test.jpg")
+        cart.add_book(book, 1)
+        assert cart.get_total_price() == 9999.99
 
 
 class TestUser:
