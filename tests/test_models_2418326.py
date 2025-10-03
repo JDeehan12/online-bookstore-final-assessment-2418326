@@ -321,6 +321,17 @@ class TestUser:
         assert len(history) == 1
         # This creates a new list unnecessarily
 
+    def test_user_has_unused_temp_data_attribute(self, test_user):
+        """Check for unused temp_data attribute (inefficiency)."""
+        assert hasattr(test_user, 'temp_data')
+        assert test_user.temp_data == []
+        # This attribute is never used - creates unnecessary memory overhead
+    
+    def test_user_has_unused_cache_attribute(self, test_user):
+        """Check for unused cache attribute (inefficiency)."""
+        assert hasattr(test_user, 'cache')
+        assert test_user.cache == {}
+        # This attribute is never used - creates unnecessary memory overhead
 
 class TestOrder:
     """Test cases for the Order class."""
@@ -404,6 +415,28 @@ class TestPaymentGateway:
         # ACTUAL: Might succeed due to missing validation (BUG)
         assert result['success'] is True  # This reveals the bug
 
+    def test_payment_empty_card_number_no_validation(self):
+        """Empty card number should fail validation but doesn't."""
+        payment_info = {
+            'payment_method': 'credit_card',
+            'card_number': '',
+            'expiry_date': '12/25',
+            'cvv': '123'
+        }
+        result = PaymentGateway.process_payment(payment_info)
+        # Currently succeeds because of missing validation
+        assert result['success'] is True
+    
+    def test_payment_invalid_card_format(self):
+        """Invalid card format should fail but doesn't."""
+        payment_info = {
+            'payment_method': 'credit_card',
+            'card_number': '1234',  # Too short
+            'expiry_date': '12/25',
+            'cvv': '123'
+        }
+        result = PaymentGateway.process_payment(payment_info)
+        assert result['success'] is True
 
 class TestEmailService:
     """Test cases for the EmailService class."""

@@ -179,6 +179,30 @@ class TestCheckout:
         }, follow_redirects=True)
         assert response.status_code == 200
         assert b'fill' in response.data.lower() or b'required' in response.data.lower()
+    
+    def test_discount_code_case_variations(self, client):
+        """Test discount codes with different cases."""
+        test_cases = ['save10', 'Save10', 'SAVE10', 'SaVe10']
+        
+        for code in test_cases:
+            # Clear cart and add item
+            client.post('/clear-cart', data={})
+            client.post('/add-to-cart', data={'title': '1984', 'quantity': '1'})
+            
+            response = client.post('/process-checkout', data={
+                'name': 'Test User',
+                'email': 'test@test.com',
+                'address': '123 Test St',
+                'city': 'Test City',
+                'zip_code': '12345',
+                'payment_method': 'credit_card',
+                'card_number': '4111111111111234',
+                'expiry_date': '12/25',
+                'cvv': '123',
+                'discount_code': code
+            }, follow_redirects=True)
+            
+            print(f"\nTested discount code: '{code}'")
 
 
 class TestUserRegistration:
@@ -221,6 +245,121 @@ class TestUserRegistration:
         # Should prevent duplicate but currently allows it
         assert response.status_code == 200
 
+class TestEmailValidationBugs:
+    """Test missing email validation."""
+    
+    def test_register_invalid_email_no_at_symbol(self, client):
+        """Register with email missing @ - should reject but accepts."""
+        response = client.post('/register', data={
+            'email': 'notanemail.com',
+            'password': 'pass123',
+            'name': 'Test User'
+        }, follow_redirects=True)
+        # Should show error but currently accepts
+        assert response.status_code == 200
+    
+    def test_register_invalid_email_no_domain(self, client):
+        """Register with incomplete email."""
+        response = client.post('/register', data={
+            'email': 'user@',
+            'password': 'pass123',
+            'name': 'Test User'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+    
+    def test_register_email_with_spaces(self, client):
+        """Register with spaces in email."""
+        response = client.post('/register', data={
+            'email': 'test user@test.com',
+            'password': 'pass123',
+            'name': 'Test User'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+    
+    def test_register_duplicate_email_different_case(self, client):
+        """Register same email with different case - should prevent."""
+        # First registration
+        client.post('/register', data={
+            'email': 'casetest@test.com',
+            'password': 'pass123',
+            'name': 'User One'
+        })
+        
+        # Same email, different case
+        response = client.post('/register', data={
+            'email': 'CaseTest@test.com',
+            'password': 'pass456',
+            'name': 'User Two'
+        }, follow_redirects=True)
+        
+        # Should reject but currently allows
+        assert response.status_code == 200
+
+
+class TestPaymentValidationBugs:
+    """Test missing payment field validation."""
+    
+    def test_checkout_empty_card_details(self, client):
+        """Submit checkout with empty card details."""
+        client.post('/add-to-cart', data={'title': '1984', 'quantity': '1'})
+        response = client.post('/process-checkout', data={
+            'name': 'Test User',
+            'email': 'test@test.com',
+            'address': '123 Test St',
+            'city': 'Test City',
+            'zip_code': '12345',
+            'payment_method': 'credit_card',
+            'card_number': '',
+            'expiry_date': '',
+            'cvv': ''
+        }, follow_redirects=True)
+        # Should fail but might succeed
+        assert response.status_code in [200, 400]
+    
+    def test_checkout_paypal_without_card_fields(self, client):
+        """PayPal should not validate card fields."""
+        client.post('/add-to-cart', data={'title': '1984', 'quantity': '1'})
+        response = client.post('/process-checkout', data={
+            'name': 'Test User',
+            'email': 'test@test.com',
+            'address': '123 Test St',
+            'city': 'Test City',
+            'zip_code': '12345',
+            'payment_method': 'paypal',
+            'card_number': '',
+            'expiry_date': '',
+            'cvv': ''
+        }, follow_redirects=True)
+        assert response.status_code == 200
+
+
+class TestSecurityInjectionAttempts:
+    """Test potential injection vulnerabilities."""
+    
+    def test_sql_injection_attempt_book_title(self, client):
+        """Test SQL injection pattern in book title."""
+        response = client.post('/add-to-cart', data={
+            'title': "'; DROP TABLE books; --",
+            'quantity': '1'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+    
+    def test_xss_attempt_checkout_name(self, client):
+        """Test XSS pattern in checkout form."""
+        client.post('/add-to-cart', data={'title': '1984', 'quantity': '1'})
+        response = client.post('/process-checkout', data={
+            'name': '<script>alert("test")</script>',
+            'email': 'test@test.com',
+            'address': '123 Test St',
+            'city': 'Test City',
+            'zip_code': '12345',
+            'payment_method': 'credit_card',
+            'card_number': '4111111111111234',
+            'expiry_date': '12/25',
+            'cvv': '123'
+        }, follow_redirects=True)
+        # Check script is escaped
+        assert b'<script>' not in response.data or b'&lt;script&gt;' in response.data
 
 class TestUserLogin:
     """Tests for user login."""

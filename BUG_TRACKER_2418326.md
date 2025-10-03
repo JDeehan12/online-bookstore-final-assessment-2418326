@@ -56,6 +56,88 @@
 
 ---
 
+### [BUG-004] Missing Payment Field Validation
+**Status**: Identified
+**Location**: `models.py` - `PaymentGateway.process_payment()` method
+**Discovered**: Additional testing - 3rd October 2025
+**Reproduction Steps**:
+1. Attempt checkout with empty card number
+2. Payment processes successfully despite missing required field
+
+**Expected Behaviour**: Should validate all payment fields and reject empty or invalid card information
+**Actual Behaviour**: Accepts empty card numbers and invalid formats without validation
+**Priority**: High
+**Fix Status**: Pending
+
+---
+
+### [BUG-005] No Email Format Validation
+**Status**: Identified
+**Location**: `app.py` - `register()` route
+**Discovered**: Additional testing - 3rd October 2025
+**Reproduction Steps**:
+1. Register with invalid email format (e.g., "notanemail.com")
+2. System accepts registration without validation
+
+**Expected Behaviour**: Should validate email format using standard email validation
+**Actual Behaviour**: Accepts any string as email address
+**Priority**: Medium
+**Fix Status**: Pending
+
+---
+
+### [BUG-006] Case-Sensitive Email Duplicate Check
+**Status**: Identified
+**Location**: `app.py` - `register()` route
+**Discovered**: Additional testing - 3rd October 2025
+**Reproduction Steps**:
+1. Register user with email "test@test.com"
+2. Register again with "Test@test.com"
+3. System creates duplicate account
+
+**Expected Behaviour**: Email comparison should be case-insensitive
+**Actual Behaviour**: Different cases treated as different emails, allowing duplicates
+**Priority**: Medium
+**Fix Status**: Pending
+
+---
+
+## Performance Inefficiencies
+
+### [INEFFICIENCY-001] Cart Price Calculation Using Nested Loop
+**Status**: Identified
+**Location**: `models.py` - `Cart.get_total_price()` method
+**Discovered**: Performance testing - 3rd October 2025
+**Issue**: Uses nested loop instead of simple multiplication
+**Performance Impact**: 79x slower for large quantities (5000 items: 0.000237s vs expected 0.000003s)
+**Expected Approach**: Direct multiplication `item.book.price * item.quantity`
+**Priority**: Medium
+**Fix Status**: Pending
+
+---
+
+### [INEFFICIENCY-002] Unused User Attributes
+**Status**: Identified
+**Location**: `models.py` - `User.__init__()` method
+**Discovered**: Unit testing - 3rd October 2025
+**Issue**: Creates `temp_data` and `cache` attributes that are never used
+**Impact**: Unnecessary memory overhead for every user instance
+**Priority**: Low
+**Fix Status**: Pending
+
+---
+
+### [INEFFICIENCY-003] Sorting on Every Order Addition
+**Status**: Identified
+**Location**: `models.py` - `User.add_order()` method
+**Discovered**: Performance testing - 3rd October 2025
+**Issue**: Sorts entire order list every time an order is added
+**Impact**: O(n log n) operation on each addition instead of sorting once when needed
+**Priority**: Low
+**Fix Status**: Pending
+
+---
+
 ## Security Issues
 
 ### [SECURITY-001] Debug Mode Enabled in Production
@@ -91,5 +173,7 @@
 **Expected Behaviour**: Should use secrets module for security-sensitive random values
 **Priority**: Low
 **Fix Status**: Pending
+
+---
 
 *Additional bugs will be documented as discovered through systematic testing*
