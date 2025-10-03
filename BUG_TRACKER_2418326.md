@@ -56,4 +56,40 @@
 
 ---
 
+## Security Issues
+
+### [SECURITY-001] Debug Mode Enabled in Production
+**Status**: Identified
+**Location**: `app.py:330` - `app.run(debug=True)`
+**Discovered**: Security testing with Bandit - 3rd October 2025
+**Severity**: High
+**Issue**: Debug mode allows arbitrary code execution through Werkzeug debugger
+**Expected Behaviour**: Debug mode should be disabled for production
+**Priority**: Critical
+**Fix Status**: Pending
+
+---
+
+### [SECURITY-002] Hardcoded Secret Key
+**Status**: Identified
+**Location**: `app.py:6` - `app.secret_key = 'your_secret_key'`
+**Discovered**: Security testing with Bandit - 3rd October 2025
+**Severity**: Low
+**Issue**: Secret key is hardcoded in source code
+**Expected Behaviour**: Secret key should be loaded from environment variables
+**Priority**: Medium
+**Fix Status**: Pending
+
+---
+
+### [SECURITY-003] Weak Random Number Generator for Transactions
+**Status**: Identified
+**Location**: `models.py:141` - `random.randint(100000, 999999)`
+**Discovered**: Security testing with Bandit - 3rd October 2025
+**Severity**: Low
+**Issue**: Using standard random module for transaction IDs (not cryptographically secure)
+**Expected Behaviour**: Should use secrets module for security-sensitive random values
+**Priority**: Low
+**Fix Status**: Pending
+
 *Additional bugs will be documented as discovered through systematic testing*
