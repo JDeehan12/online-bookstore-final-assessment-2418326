@@ -183,7 +183,8 @@
 **Issue**: Debug mode allows arbitrary code execution through Werkzeug debugger
 **Expected Behaviour**: Debug mode should be disabled for production
 **Priority**: Critical
-**Fix Status**: Pending
+**Fix Status**: Fixed - 10th October 2025
+**Fix Description**: Changed `app.run(debug=True)` to `app.run(debug=False)` to disable debug mode in production
 
 ---
 
@@ -195,8 +196,8 @@
 **Issue**: Secret key is hardcoded in source code
 **Expected Behaviour**: Secret key should be loaded from environment variables
 **Priority**: Medium
-**Fix Status**: Pending
-
+**Fix Status**: Fixed - 10th October 2025
+**Fix Description**: Changed hardcoded secret key to `app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')` to load from environment variables
 ---
 
 ### [SECURITY-003] Weak Random Number Generator for Transactions
@@ -207,7 +208,8 @@
 **Issue**: Using standard random module for transaction IDs (not cryptographically secure)
 **Expected Behaviour**: Should use secrets module for security-sensitive random values
 **Priority**: Low
-**Fix Status**: Pending
+**Fix Status**: Fixed - 10th October 2025
+**Fix Description**: Replaced `random.randint()` with `secrets.randbelow()` for cryptographically secure transaction ID generation. Moved imports to module level.
 
 ---
 

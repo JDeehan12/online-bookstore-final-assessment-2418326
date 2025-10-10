@@ -66,9 +66,12 @@
    - Multiple imports and unused variables
 
 4. **Security Vulnerabilities**
+   - ~~Debug mode enabled (FIXED - 10th October 2025)~~
+   - ~~Hardcoded secret key (FIXED - 10th October 2025)~~
+   - ~~Weak random number generator for transactions (FIXED - 10th October 2025)~~
    - Plain text password storage
    - Case-sensitive email checking (allows duplicates)
-   - Missing input sanitization
+   - Missing input sanitisation
 
 ---
 

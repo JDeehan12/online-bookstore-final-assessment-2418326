@@ -12,10 +12,17 @@ Comprehensive testing, bug identification, performance optimisation, and CI/CD i
 - [ ] Performance profiling setup
 
 ### Phase 2: Bug Discovery & Documentation
-- [ ] Systematic functional testing
-- [ ] Edge case identification
-- [ ] Security vulnerability assessment
-- [ ] Bug reproduction documentation
+- [x] Systematic functional testing
+- [x] Edge case identification
+- [x] Security vulnerability assessment
+- [x] Bug reproduction documentation
+- **Status**: Complete - All bugs documented in BUG_TRACKER_2418326.md
+
+### Phase 2.5: Security Fixes (Added 10th October 2025)
+- [x] SECURITY-001: Disable debug mode
+- [x] SECURITY-002: Environment variable secret key
+- [x] SECURITY-003: Secure random generator for transactions
+- **Status**: Complete - 3/3 security issues resolved
 
 ### Phase 3: Bug Fixes & Optimisation
 - [ ] Fix critical bugs
