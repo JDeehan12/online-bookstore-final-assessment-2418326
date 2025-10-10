@@ -24,10 +24,6 @@ Comprehensive testing, bug identification, performance optimisation, and CI/CD i
 - [x] SECURITY-003: Secure random generator for transactions
 - **Status**: Complete - 3/3 security issues resolved
 
-## Note for TESTING_PLAN_2418326.md
-
-Add this under the appropriate phase section:
-
 ### Phase 2.2: Test Quality Improvement (10th October 2025)
 **Status**: Complete
 
@@ -40,7 +36,24 @@ Add this under the appropriate phase section:
 - Updated test to check specific cart metrics (item count, cart-item div count)
 - Demonstrates importance of precise test assertions
 - All integration tests now passing with more robust checks
-- 
+
+### Phase 2.3: Major Bug Fixes (10th October 2025)
+**Status**: Complete
+
+**BUG-001**: Cart zero/negative quantity removal
+- Fixed `Cart.update_quantity()` to remove items when quantity <= 0
+- 3 related tests now passing
+
+**BUG-002**: Case-sensitive discount codes  
+- Made discount code comparison case-insensitive using `.upper()`
+- Added `.strip()` for whitespace handling
+- 1 test now passing (with improved assertion)
+
+**TEST-002**: Discount code test assertion improved
+- Changed from searching for flash message text to verifying order confirmation
+- More reliable test that checks actual functionality
+
+**Progress**: 126/130 tests passing (4 instructor bugs remaining to identify)
 
 ### Phase 3: Bug Fixes & Optimisation
 - [ ] Fix critical bugs
