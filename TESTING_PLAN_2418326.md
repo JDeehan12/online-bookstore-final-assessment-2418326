@@ -18,11 +18,29 @@ Comprehensive testing, bug identification, performance optimisation, and CI/CD i
 - [x] Bug reproduction documentation
 - **Status**: Complete - All bugs documented in BUG_TRACKER_2418326.md
 
-### Phase 2.5: Security Fixes (Added 10th October 2025)
+### Phase 2.1: Security Fixes (Added 10th October 2025)
 - [x] SECURITY-001: Disable debug mode
 - [x] SECURITY-002: Environment variable secret key
 - [x] SECURITY-003: Secure random generator for transactions
 - **Status**: Complete - 3/3 security issues resolved
+
+## Note for TESTING_PLAN_2418326.md
+
+Add this under the appropriate phase section:
+
+### Phase 2.2: Test Quality Improvement (10th October 2025)
+**Status**: Complete
+
+**Test Issue Discovered**:
+- **TEST-001**: Integration test `test_cart_modification_workflow` had overly broad assertion
+- Test checked entire HTML for book title, including flash messages
+- Caused false positive failure when book was correctly removed
+
+**Solution**:
+- Updated test to check specific cart metrics (item count, cart-item div count)
+- Demonstrates importance of precise test assertions
+- All integration tests now passing with more robust checks
+- 
 
 ### Phase 3: Bug Fixes & Optimisation
 - [ ] Fix critical bugs

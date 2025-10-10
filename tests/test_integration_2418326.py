@@ -97,7 +97,10 @@ class TestCompleteShoppingWorkflow:
         # Check final cart state
         response = client.get('/cart')
         assert b'Moby Dick' in response.data
-        assert b'I Ching' not in response.data
+        # Check I Ching is not in the cart items (ignore flash messages)
+        assert b'Total Items: 5' in response.data  # Only Moby Dick with qty 5
+        # Verify only one cart item div (Moby Dick)
+        assert response.data.count(b'<div class="cart-item">') == 1
 
 
 class TestUserAccountWorkflow:

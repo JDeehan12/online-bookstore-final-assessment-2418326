@@ -213,4 +213,52 @@
 
 ---
 
+### TEST-001: Integration Test False Positive (Test Design Issue)
+**Type**: Test Design Issue  
+**Priority**: Medium  
+**Discovered**: 10th October 2025 (during BUG-001 fix validation)  
+**File**: `tests/test_integration_2418326.py`  
+**Function**: `test_cart_modification_workflow`  
+
+#### Description
+Test was checking if book title appeared anywhere in HTML response, including flash messages. When a book was removed from cart, the flash message "Removed 'I Ching' from cart!" caused test to fail even though removal worked correctly.
+
+#### Issue
+```python
+# Original assertion - too broad
+assert b'I Ching' not in response.data
+```
+
+This checks the ENTIRE HTML page, including flash messages, navigation, etc.
+
+#### Expected Behaviour
+Test should verify book is removed from cart items, not just absent from entire page.
+
+#### Reproduction Steps
+1. Add items to cart
+2. Remove an item
+3. Check cart view
+4. Test fails despite item being correctly removed (appears in flash message)
+
+#### Evidence
+- Cart showed "Total Items: 5" (only Moby Dick qty 5)
+- Only 1 cart-item div present (Moby Dick)
+- "I Ching" appeared in flash message: "Removed 'I Ching' from cart!"
+
+#### Fix Applied
+```python
+# Fixed assertions - specific checks
+assert b'Moby Dick' in response.data
+assert b'Total Items: 5' in response.data  # Only Moby Dick with qty 5
+# Verify only one cart item div (Moby Dick)
+assert response.data.count(b'<div class="cart-item">') == 1
+```
+
+**Fix Status**: Fixed - 10th October 2025  
+**Fix Description**: Updated test to check cart item count and number of cart-item divs instead of searching entire HTML. This correctly verifies removal without false positives from flash messages.
+
+**Test Result After Fix**: PASS ✓
+
+---
+
 *Additional bugs will be documented as discovered through systematic testing*
