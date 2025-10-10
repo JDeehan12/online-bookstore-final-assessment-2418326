@@ -63,7 +63,17 @@ def index():
 @app.route('/add-to-cart', methods=['POST'])
 def add_to_cart():
     book_title = request.form.get('title')
-    quantity = int(request.form.get('quantity', 1))
+    quantity_str = request.form.get('quantity', '1')
+    
+    # Validate quantity input
+    try:
+        quantity = int(quantity_str)
+        if quantity <= 0:
+            flash('Quantity must be a positive number', 'error')
+            return redirect(url_for('index'))
+    except ValueError:
+        flash('Invalid quantity. Please enter a valid number', 'error')
+        return redirect(url_for('index'))
     
     book = None
     for b in BOOKS:

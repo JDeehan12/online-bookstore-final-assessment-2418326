@@ -139,11 +139,12 @@
 **Expected Behaviour**: Should validate input and display error message for non-integer quantities
 **Actual Behaviour**: Unhandled ValueError exception causes 500 Internal Server Error
 **Priority**: High
-**Fix Status**: Pending
+**Fix Status**: Fixed - 10th October 2025
 **Related Tests**: 
 - `test_add_book_with_string_quantity`
 - `test_add_book_with_empty_quantity`
 - `test_add_book_with_float_string`
+**Fix Description**: Added try-except block to handle ValueError when converting quantity to int. Validates quantity is positive integer before processing.
 
 ---
 
