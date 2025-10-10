@@ -105,6 +105,90 @@
 
 ---
 
+### [BUG-007] No Input Validation for Quantity in add_to_cart
+**Status**: Identified
+**Location**: `app.py` line 66 - `add_to_cart()` route
+**Discovered**: Testing - 10th October 2025
+**Reproduction Steps**:
+1. Navigate to homepage
+2. Enter non-numeric value in quantity field (e.g., 'abc', '', '2.5')
+3. Click 'Add to Cart'
+4. Application crashes with ValueError: invalid literal for int()
+
+**Expected Behaviour**: Should validate input and display error message for non-integer quantities
+**Actual Behaviour**: Unhandled ValueError exception causes 500 Internal Server Error
+**Priority**: High
+**Fix Status**: Pending
+**Related Tests**: 
+- `test_add_book_with_string_quantity`
+- `test_add_book_with_empty_quantity`
+- `test_add_book_with_float_string`
+
+---
+
+### [BUG-007] No Input Validation for Quantity in add_to_cart
+**Status**: Identified
+**Location**: `app.py` line 66 - `add_to_cart()` route
+**Discovered**: Testing - 10th October 2025
+**Reproduction Steps**:
+1. Navigate to homepage
+2. Enter non-numeric value in quantity field (e.g., 'abc', '', '2.5')
+3. Click 'Add to Cart'
+4. Application crashes with ValueError: invalid literal for int()
+
+**Expected Behaviour**: Should validate input and display error message for non-integer quantities
+**Actual Behaviour**: Unhandled ValueError exception causes 500 Internal Server Error
+**Priority**: High
+**Fix Status**: Pending
+**Related Tests**: 
+- `test_add_book_with_string_quantity`
+- `test_add_book_with_empty_quantity`
+- `test_add_book_with_float_string`
+
+---
+
+### [BUG-008] No Input Validation for Quantity in update_cart
+**Status**: Identified
+**Location**: `app.py` line 109 - `update_cart()` route
+**Discovered**: Testing - 10th October 2025
+**Reproduction Steps**:
+1. Add item to cart
+2. Navigate to cart page
+3. Enter non-numeric value in quantity field (e.g., 'xyz', '!@#
+)
+4. Click 'Update'
+5. Application crashes with ValueError: invalid literal for int()
+
+**Expected Behaviour**: Should validate input and display error message for non-integer quantities
+**Actual Behaviour**: Unhandled ValueError exception causes 500 Internal Server Error
+**Priority**: High
+**Fix Status**: Pending
+**Related Tests**:
+- `test_update_with_invalid_quantity`
+- `test_update_with_special_characters`
+
+---
+
+### [BUG-009] Empty Cart Checkout Flash Message Not Visible
+**Status**: Identified
+**Location**: `app.py` - `checkout()` route
+**Discovered**: Testing - 10th October 2025
+**Reproduction Steps**:
+1. Ensure cart is empty (clear if necessary)
+2. Navigate directly to `/checkout` URL
+3. User is redirected to homepage
+4. Flash message 'Your cart is empty!' is set but not visible in test response
+
+**Expected Behaviour**: Flash message should be visible in the redirected response for testing
+**Actual Behaviour**: Flash message exists but test cannot verify it appears in response.data after redirect
+**Priority**: Low (cosmetic - functionality works, just test visibility issue)
+**Fix Status**: Pending
+**Related Test**: `test_checkout_with_empty_cart`
+
+**Note**: This is actually a test design issue rather than application issue. Flash messages work correctly in browser but are not visible in test response after redirect. Test assertion needs adjustment rather than code fix.
+
+---
+
 ## Performance Inefficiencies
 
 ### [INEFFICIENCY-001] Cart Price Calculation Using Nested Loop
