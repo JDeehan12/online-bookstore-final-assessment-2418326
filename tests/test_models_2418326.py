@@ -432,7 +432,7 @@ class TestPaymentGateway:
         }
         result = PaymentGateway.process_payment(payment_info)
         assert result['success'] is False
-        assert 'Invalid card number' in result['message']
+        assert 'Card declined' in result['message']
     
     def test_payment_paypal_method(self):
         """BUG #4 TEST: PayPal payment method not properly handled."""
@@ -444,7 +444,8 @@ class TestPaymentGateway:
         }
         result = PaymentGateway.process_payment(payment_info)
         # Current code passes empty card validation for PayPal (BUG)
-        assert result['success'] is True
+        assert result['success'] is False
+        assert 'PayPal email required' in result['message']
     
     def test_payment_empty_card_number(self):
         """BUG #4 TEST: Empty card number should fail."""
@@ -457,7 +458,8 @@ class TestPaymentGateway:
         result = PaymentGateway.process_payment(payment_info)
         # EXPECTED: Should fail
         # ACTUAL: Might succeed due to missing validation (BUG)
-        assert result['success'] is True  # This reveals the bug
+        assert result['success'] is False  # Fixed: now properly validates
+        assert 'Card number required' in result['message']
 
     def test_payment_empty_card_number_no_validation(self):
         """Empty card number should fail validation but doesn't."""
@@ -469,7 +471,8 @@ class TestPaymentGateway:
         }
         result = PaymentGateway.process_payment(payment_info)
         # Currently succeeds because of missing validation
-        assert result['success'] is True
+        assert result['success'] is False
+        assert 'Card number required' in result['message']
     
     def test_payment_invalid_card_format(self):
         """Invalid card format should fail but doesn't."""
@@ -480,7 +483,8 @@ class TestPaymentGateway:
             'cvv': '123'
         }
         result = PaymentGateway.process_payment(payment_info)
-        assert result['success'] is True
+        assert result['success'] is False
+        assert 'Invalid card number format' in result['message']
 
 class TestEmailService:
     """Test cases for the EmailService class."""

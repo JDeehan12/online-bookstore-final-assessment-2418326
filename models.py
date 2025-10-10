@@ -129,14 +129,85 @@ class PaymentGateway:
     
     @staticmethod
     def process_payment(payment_info):
-        """Mock payment processing - returns success/failure with mock logic"""
-        card_number = payment_info.get('card_number', '')
+        """Mock payment processing with validation - returns success/failure"""
+        payment_method = payment_info.get('payment_method', '')
         
-        # Mock logic: cards ending in '1111' fail, others succeed
-        if card_number.endswith('1111'):
+        # Validate payment method
+        if payment_method not in ['credit_card', 'paypal']:
             return {
                 'success': False,
-                'message': 'Payment failed: Invalid card number',
+                'message': 'Payment failed: Invalid payment method',
+                'transaction_id': None
+            }
+        
+        # PayPal validation
+        if payment_method == 'paypal':
+            paypal_email = payment_info.get('paypal_email', '').strip()
+            if not paypal_email:
+                return {
+                    'success': False,
+                    'message': 'Payment failed: PayPal email required',
+                    'transaction_id': None
+                }
+            # PayPal payment successful
+            time.sleep(0.1)
+            transaction_id = f"TXN{secrets.randbelow(900000) + 100000}"
+            return {
+                'success': True,
+                'message': 'Payment processed successfully via PayPal',
+                'transaction_id': transaction_id
+            }
+        
+        # Credit card validation
+        card_number = payment_info.get('card_number', '').strip()
+        expiry_date = payment_info.get('expiry_date', '').strip()
+        cvv = payment_info.get('cvv', '').strip()
+        
+        # Validate card number exists and has correct length
+        if not card_number:
+            return {
+                'success': False,
+                'message': 'Payment failed: Card number required',
+                'transaction_id': None
+            }
+        
+        # Remove spaces from card number for validation
+        card_number_clean = card_number.replace(' ', '')
+        if not card_number_clean.isdigit() or len(card_number_clean) < 13 or len(card_number_clean) > 19:
+            return {
+                'success': False,
+                'message': 'Payment failed: Invalid card number format',
+                'transaction_id': None
+            }
+        
+        # Validate expiry date
+        if not expiry_date:
+            return {
+                'success': False,
+                'message': 'Payment failed: Expiry date required',
+                'transaction_id': None
+            }
+        
+        # Validate CVV
+        if not cvv:
+            return {
+                'success': False,
+                'message': 'Payment failed: CVV required',
+                'transaction_id': None
+            }
+        
+        if not cvv.isdigit() or len(cvv) not in [3, 4]:
+            return {
+                'success': False,
+                'message': 'Payment failed: Invalid CVV format',
+                'transaction_id': None
+            }
+        
+        # Mock logic: cards ending in '1111' fail, others succeed
+        if card_number_clean.endswith('1111'):
+            return {
+                'success': False,
+                'message': 'Payment failed: Card declined',
                 'transaction_id': None
             }
         
@@ -144,16 +215,11 @@ class PaymentGateway:
         
         transaction_id = f"TXN{secrets.randbelow(900000) + 100000}"
         
-        if payment_info.get('payment_method') == 'paypal':
-            pass
-        
         return {
             'success': True,
             'message': 'Payment processed successfully',
             'transaction_id': transaction_id
         }
-
-
 class EmailService:
     """Mock email service for sending order confirmations"""
     
