@@ -155,18 +155,18 @@
 **Reproduction Steps**:
 1. Add item to cart
 2. Navigate to cart page
-3. Enter non-numeric value in quantity field (e.g., 'xyz', '!@#
-)
+3. Enter non-numeric value in quantity field (e.g., 'xyz', '!@#)
 4. Click 'Update'
 5. Application crashes with ValueError: invalid literal for int()
 
 **Expected Behaviour**: Should validate input and display error message for non-integer quantities
 **Actual Behaviour**: Unhandled ValueError exception causes 500 Internal Server Error
 **Priority**: High
-**Fix Status**: Pending
+**Fix Status**: Fixed - 10th October 2025
 **Related Tests**:
 - `test_update_with_invalid_quantity`
 - `test_update_with_special_characters`
+**Fix Description**: Added try-except block to handle ValueError when converting quantity to int. Validates input before calling cart.update_quantity() method.
 
 ---
 

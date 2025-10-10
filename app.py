@@ -116,7 +116,14 @@ def update_cart():
         - Confirmation of update otherwise
     """
     book_title = request.form.get('title')
-    quantity = int(request.form.get('quantity', 1))
+    quantity_str = request.form.get('quantity', '1')
+    
+    # Validate quantity input
+    try:
+        quantity = int(quantity_str)
+    except ValueError:
+        flash('Invalid quantity. Please enter a valid number', 'error')
+        return redirect(url_for('view_cart'))
     
     cart.update_quantity(book_title, quantity)
     
