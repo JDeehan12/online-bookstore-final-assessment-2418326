@@ -1,3 +1,12 @@
+"""
+Student 2418326
+models.py
+"""
+
+import secrets
+import time
+import datetime
+
 class Book:
     def __init__(self, title, category, price, image):
         self.title = title
@@ -94,7 +103,6 @@ class User:
 class Order:
     """Order management class"""
     def __init__(self, order_id, user_email, items, shipping_info, payment_info, total_amount):
-        import datetime
         self.order_id = order_id
         self.user_email = user_email
         self.items = items.copy()  # Copy of cart items
@@ -132,13 +140,9 @@ class PaymentGateway:
                 'transaction_id': None
             }
         
-        import random
-        import time
-        import datetime
-        
         time.sleep(0.1)
         
-        transaction_id = f"TXN{random.randint(100000, 999999)}"
+        transaction_id = f"TXN{secrets.randbelow(900000) + 100000}"
         
         if payment_info.get('payment_method') == 'paypal':
             pass
