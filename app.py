@@ -165,17 +165,17 @@ def process_checkout():
         'cvv': request.form.get('cvv')
     }
     
-    discount_code = request.form.get('discount_code', '')
-    
+    discount_code = request.form.get('discount_code', '').strip()
+
     # Calculate total with discount
     total_amount = cart.get_total_price()
     discount_applied = 0
-    
-    if discount_code == 'SAVE10':
+
+    if discount_code.upper() == 'SAVE10':
         discount_applied = total_amount * 0.10
         total_amount -= discount_applied
         flash(f'Discount applied! You saved ${discount_applied:.2f}', 'success')
-    elif discount_code == 'WELCOME20':
+    elif discount_code.upper() == 'WELCOME20':
         discount_applied = total_amount * 0.20
         total_amount -= discount_applied
         flash(f'Welcome discount applied! You saved ${discount_applied:.2f}', 'success')
