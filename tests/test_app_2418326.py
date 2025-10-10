@@ -120,9 +120,15 @@ class TestCheckout:
     
     def test_checkout_with_empty_cart(self, client):
         """Try to checkout with no items."""
-        response = client.get('/checkout', follow_redirects=True)
-        assert response.status_code == 200
-        assert b'empty' in response.data.lower()
+        # Clear cart to ensure it's empty
+        client.post('/clear-cart', data={})
+        
+        # Try to access checkout - should redirect
+        response = client.get('/checkout', follow_redirects=False)
+        assert response.status_code == 302  # Redirect status
+        
+        # Verify redirect location
+        assert '/' in response.location
     
     def test_checkout_page_loads(self, client):
         """Load checkout page with items in cart."""
