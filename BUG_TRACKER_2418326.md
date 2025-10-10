@@ -149,6 +149,30 @@
 
 ---
 
+### [INEFFICIENCY-005] Multiple Imports Inside Method
+**Status**: Identified
+**Location**: `models.py` - `PaymentGateway.process_payment()` method
+**Discovered**: Code review - 3rd October 2025
+**Issue**: Imports `random`, `time`, and `datetime` inside method instead of at module level
+**Impact**: Import overhead on every payment processing call
+**Expected Approach**: Move imports to top of models.py file
+**Priority**: Low
+**Fix Status**: Pending
+
+---
+
+### [INEFFICIENCY-006] Inefficient Field Validation Loop
+**Status**: Identified
+**Location**: `app.py` - `process_checkout()` route
+**Discovered**: Code review - 3rd October 2025
+**Issue**: Uses loop-based validation instead of more efficient validation pattern
+**Impact**: Reduced code readability and maintainability
+**Expected Approach**: Refactor to cleaner validation pattern (e.g., dictionary comprehension or validation library)
+**Priority**: Low
+**Fix Status**: Pending
+
+---
+
 ## Security Issues
 
 ### [SECURITY-001] Debug Mode Enabled in Production
