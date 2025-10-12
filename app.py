@@ -308,7 +308,7 @@ def login():
         password = request.form.get('password')
         
         user = users.get(email)
-        if user and user.password == password:
+        if user and user.verify_password(password):
             session['user_email'] = email
             flash('Logged in successfully!', 'success')
             return redirect(url_for('index'))
@@ -345,7 +345,7 @@ def update_profile():
     
     new_password = request.form.get('new_password')
     if new_password:
-        current_user.password = new_password
+        current_user.password = current_user._hash_password(new_password)
         flash('Password updated successfully!', 'success')
     else:
         flash('Profile updated successfully!', 'success')

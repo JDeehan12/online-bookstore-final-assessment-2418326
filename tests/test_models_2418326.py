@@ -323,7 +323,7 @@ class TestUser:
         """Positive test: User with all details."""
         user = User("user@test.com", "password123", "Test User", "123 Test St")
         assert user.email == "user@test.com"
-        assert user.password == "password123"
+        assert user.verify_password("password123")
         assert user.name == "Test User"
         assert user.address == "123 Test St"
         assert user.orders == []
@@ -332,7 +332,7 @@ class TestUser:
         """Positive test: User with minimal details."""
         user = User("user@test.com", "pass")
         assert user.email == "user@test.com"
-        assert user.password == "pass"
+        assert user.verify_password("pass")
         assert user.name == ""
         assert user.address == ""
     

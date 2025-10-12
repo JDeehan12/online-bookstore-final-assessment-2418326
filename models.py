@@ -3,6 +3,7 @@ Student 2418326
 models.py
 """
 
+import bcrypt
 import secrets
 import time
 import datetime
@@ -84,13 +85,21 @@ class Cart:
 
 
 class User:
-    """User account management class"""
+    """User account management class with secure password hashing"""
     def __init__(self, email, password, name="", address=""):
         self.email = email
-        self.password = password
+        self.password = self._hash_password(password)
         self.name = name
         self.address = address
         self.orders = []
+    
+    def _hash_password(self, password):
+        """Hash password using bcrypt"""
+        return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    
+    def verify_password(self, password):
+        """Verify password against hash"""
+        return bcrypt.checkpw(password.encode('utf-8'), self.password)
     
     def add_order(self, order):
         self.orders.append(order)
