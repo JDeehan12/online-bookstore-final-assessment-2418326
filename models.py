@@ -91,8 +91,6 @@ class User:
         self.name = name
         self.address = address
         self.orders = []
-        self.temp_data = []
-        self.cache = {}
     
     def add_order(self, order):
         self.orders.append(order)

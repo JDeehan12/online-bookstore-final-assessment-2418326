@@ -151,3 +151,28 @@ class TestComparisonBeforeOptimisation:
             print(f"Quantity {qty:5d}: {avg_time:.6f} seconds (100 iterations)")
         
         print("\nThese baseline times will be compared with post-optimisation results")
+
+class TestMemoryEfficiency:
+    """Test memory efficiency improvements."""
+    
+    def test_user_memory_footprint(self):
+        """Measure memory usage of User objects after removing unused attributes."""
+        import sys
+        
+        # Create a user
+        user = User("test@test.com", "pass123", "Test User", "123 Test St")
+        
+        # Get size of user object
+        user_size = sys.getsizeof(user.__dict__)
+        
+        print(f"\nUser object __dict__ size: {user_size} bytes")
+        print(f"User attributes: {list(user.__dict__.keys())}")
+        print(f"Number of attributes: {len(user.__dict__)}")
+        
+        # Before fix: 7 attributes (email, password, name, address, orders, temp_data, cache)
+        # After fix: 5 attributes (email, password, name, address, orders)
+        # Improvement: 2 fewer attributes per user instance
+        
+        assert len(user.__dict__) == 5  # Should have exactly 5 attributes now
+        assert 'temp_data' not in user.__dict__
+        assert 'cache' not in user.__dict__

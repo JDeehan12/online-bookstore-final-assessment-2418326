@@ -327,8 +327,6 @@ class TestUser:
         assert user.name == "Test User"
         assert user.address == "123 Test St"
         assert user.orders == []
-        assert user.temp_data == []  # INEFFICIENCY #2: Unused attribute
-        assert user.cache == {}      # INEFFICIENCY #2: Unused attribute
     
     def test_user_initialisation_minimal_details(self):
         """Positive test: User with minimal details."""
@@ -364,18 +362,6 @@ class TestUser:
         history = test_user.get_order_history()
         assert len(history) == 1
         # This creates a new list unnecessarily
-
-    def test_user_has_unused_temp_data_attribute(self, test_user):
-        """Check for unused temp_data attribute (inefficiency)."""
-        assert hasattr(test_user, 'temp_data')
-        assert test_user.temp_data == []
-        # This attribute is never used - creates unnecessary memory overhead
-    
-    def test_user_has_unused_cache_attribute(self, test_user):
-        """Check for unused cache attribute (inefficiency)."""
-        assert hasattr(test_user, 'cache')
-        assert test_user.cache == {}
-        # This attribute is never used - creates unnecessary memory overhead
 
 class TestOrder:
     """Test cases for the Order class."""

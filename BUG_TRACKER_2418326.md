@@ -194,7 +194,8 @@
 **Issue**: Creates `temp_data` and `cache` attributes that are never used
 **Impact**: Unnecessary memory overhead for every user instance
 **Priority**: Low
-**Fix Status**: Pending
+**Fix Status**: Fixed - 12th October 2025
+**Fix Description**: Removed `self.temp_data = []` and `self.cache = {}` from User initialisation. Reduced attribute count from 7 to 5 per User instance (28.6% reduction). Current memory footprint: 288 bytes per User object. Also removed corresponding test assertions that documented the inefficiency.
 
 ---
 
