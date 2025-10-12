@@ -1,0 +1,196 @@
+README - Student 2418326
+Software Testing Final Assessment - Online Bookstore Testing Suite
+
+================================================================================
+1. REQUIREMENTS
+================================================================================
+
+Prerequisites:
+	• Python 3.12 or higher
+	• pip package manager
+	• Git (for cloning repository)
+
+Install dependencies using:
+	pip install -r requirements.txt
+
+This installs:
+	• Flask 3.0.3 (web framework)
+	• pytest 8.3.3 (testing framework)
+	• pytest-cov 5.0.0 (code coverage)
+	• pytest-flask 1.3.0 (Flask testing utilities)
+	• bcrypt 4.1.1 (password hashing)
+	• bandit 1.7.10 (security scanning)
+	• locust 2.31.5 (performance testing)
+	• Additional supporting libraries
+
+================================================================================
+2. HOW TO RUN TESTS
+================================================================================
+
+RECOMMENDED - Run all tests together:
+	pytest -v
+	
+	Expected output: 130 passed in ~21 seconds
+	
+	This runs all test files:
+		• test_models_2418326.py (64 tests)
+		• test_app_2418326.py (45 tests)
+		• test_integration_2418326.py (14 tests)
+		• test_performance_2418326.py (6 tests)
+		• test_security_2418326.py (1 test)
+
+RUNNING INDIVIDUAL TEST FILES:
+
+	a) Models Testing (Book, Cart, User, Order, PaymentGateway):
+		pytest tests/test_models_2418326.py -v
+		Expected output: 64 passed
+
+	b) Application Testing (Flask routes and functionality):
+		pytest tests/test_app_2418326.py -v
+		Expected output: 45 passed
+		
+	c) Integration Testing (Complete user workflows):
+		pytest tests/test_integration_2418326.py -v
+		Expected output: 14 passed
+		
+	d) Performance Testing (Profiling and benchmarks):
+		pytest tests/test_performance_2418326.py -v
+		Expected output: 6 passed
+		
+	e) Security Testing (Bandit static analysis):
+		pytest tests/test_security_2418326.py -v
+		Expected output: 1 passed
+
+RUNNING SPECIFIC TESTS:
+	pytest tests/test_models_2418326.py::TestCart -v
+	(Runs only Cart-related tests)
+
+RUNNING WITH COVERAGE REPORT:
+	pytest --cov=. --cov-report=html
+	(Generates HTML coverage report in htmlcov/ directory)
+
+================================================================================
+3. WHAT GETS TESTED
+================================================================================
+
+Comprehensive Testing Coverage (130 tests total):
+
+Unit Tests (64 tests):
+	a) Book class: Initialisation, price validation, boundary values
+	b) CartItem class: Price calculations, quantity handling
+	c) Cart class: Add/remove/update items, total calculations, edge cases
+	d) User class: Password hashing, order management, profile updates
+	e) Order class: Order creation, data conversion
+	f) PaymentGateway class: Payment validation, card verification, error handling
+	g) EmailService class: Order confirmation emails
+
+Application Tests (45 tests):
+	a) Homepage routes: Loading, book display
+	b) Cart operations: Add to cart, update quantities, remove items
+	c) Checkout process: Form validation, discount codes, payment processing
+	d) User authentication: Registration, login, logout, profile updates
+	e) Input validation: Email formats, quantity validation, payment fields
+	f) Security: XSS prevention, injection attempts
+	g) Error handling: Empty cart, missing fields, invalid inputs
+
+Integration Tests (14 tests):
+	a) Complete shopping workflows: Browse → Cart → Checkout → Confirmation
+	b) User account workflows: Register → Login → Purchase → Profile update
+	c) Payment processing: Successful and failed payment scenarios
+	d) State management: Cart clearing, session handling, data consistency
+
+Performance Tests (6 tests):
+	a) Cart calculation performance: Timing tests with various quantities
+	b) User order management: Sorting performance benchmarks
+	c) Memory efficiency: User object memory footprint analysis
+	d) Profiling: cProfile integration for bottleneck identification
+
+Security Tests (1 test):
+	a) Bandit static analysis: Automated security vulnerability scanning
+
+================================================================================
+4. CI/CD PIPELINE
+================================================================================
+
+GitHub Actions Automation:
+	• Automated testing runs on every push to development/main branches
+	• All 130 tests execute automatically in ~21 seconds
+	• Pipeline configuration: .github/workflows/testing-pipeline-2418326.yml
+	• Pipeline documentation: .github/workflows/README_CICD_2418326.md
+
+To view CI/CD results:
+	1. Visit GitHub repository: https://github.com/JDeehan12/online-bookstore-final-assessment-2418326
+	2. Navigate to "Actions" tab
+	3. View test results for each commit
+
+================================================================================
+5. RUNNING THE APPLICATION
+================================================================================
+
+To run the Flask application locally:
+	python app.py
+	
+	Then open browser to: http://127.0.0.1:5000
+
+Demo account details:
+	Email: demo@bookstore.com
+	Password: demo123
+
+Test discount codes:
+	• SAVE10 (10% discount)
+	• WELCOME20 (20% discount)
+
+Test payment scenarios:
+	• Successful payment: Use any card number except ending in 1111
+	• Failed payment: Use card number ending in 1111
+
+================================================================================
+6. TROUBLESHOOTING
+================================================================================
+
+If tests don't run:
+	a) Ensure you're in the project root directory
+	b) Check Python version: python --version (requires 3.12+)
+	c) Verify all dependencies installed: pip list
+	d) Reinstall dependencies: pip install -r requirements.txt
+	e) Try alternative command: python -m pytest -v
+
+If "ModuleNotFoundError: No module named 'bcrypt'":
+	a) Ensure bcrypt installed: pip install bcrypt==4.1.1
+	b) Check if using correct Python environment
+	c) If using virtual environment, ensure it's activated
+
+If Flask import errors occur:
+	a) Install Flask directly: pip install flask==3.0.3
+	b) Verify Flask installation: python -c "import flask; print(flask.__version__)"
+
+If tests run but some fail:
+	a) This may indicate environment-specific issues
+	b) Check that all dependencies match requirements.txt versions
+	c) Ensure no conflicting packages installed
+	d) All 130 tests should pass in a clean environment
+
+For CI/CD pipeline issues:
+	a) Check GitHub Actions tab for detailed error logs
+	b) Verify workflow file exists: .github/workflows/testing-pipeline-2418326.yml
+	c) Ensure repository has Actions enabled
+
+================================================================================
+7. DOCUMENTATION
+================================================================================
+
+Complete project documentation available:
+
+	• BUG_TRACKER_2418326.md
+	  Comprehensive documentation of all 21 issues, fixes, and verification
+
+	• TESTING_PLAN_2418326.md
+	  Testing strategy, phases, and completion status
+
+	• .github/workflows/README_CICD_2418326.md
+	  CI/CD pipeline configuration and rationale
+
+	• This README
+	  Setup instructions and testing guide
+
+================================================================================
