@@ -363,6 +363,7 @@ class TestUser:
         assert len(history) == 1
         # This creates a new list unnecessarily
 
+
 class TestOrder:
     """Test cases for the Order class."""
     

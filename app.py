@@ -79,12 +79,8 @@ def add_to_cart():
         flash('Invalid quantity. Please enter a valid number', 'error')
         return redirect(url_for('index'))
     
-    book = None
-    for b in BOOKS:
-        if b.title == book_title:
-            book = b
-            break
-    
+    book = get_book_by_title(book_title)
+        
     if book:
         cart.add_book(book, quantity)
         flash(f'Added {quantity} "{book.title}" to cart!', 'success')

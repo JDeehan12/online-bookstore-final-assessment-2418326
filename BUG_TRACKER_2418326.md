@@ -215,8 +215,8 @@
 **Discovered**: Code analysis - 3rd October 2025
 **Issue**: Uses manual loop `for b in BOOKS:` instead of existing `get_book_by_title()` helper
 **Impact**: Code duplication and reduced maintainability
-**Priority**: Low
-**Fix Status**: Pending
+**Fix Status**: Fixed - 12th October 2025
+**Fix Description**: Replaced 5-line manual loop with single call to `get_book_by_title(book_title)`. Eliminates code duplication (book lookup logic now exists in only one location). Code reduction: 80% (5 lines → 1 line).
 
 ---
 
