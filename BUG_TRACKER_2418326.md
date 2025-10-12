@@ -104,28 +104,8 @@
 **Expected Behaviour**: Email comparison should be case-insensitive
 **Actual Behaviour**: Different cases treated as different emails, allowing duplicates
 **Priority**: Medium
-**Fix Status**: Pending
-
----
-
-### [BUG-007] No Input Validation for Quantity in add_to_cart
-**Status**: Identified
-**Location**: `app.py` line 66 - `add_to_cart()` route
-**Discovered**: Testing - 10th October 2025
-**Reproduction Steps**:
-1. Navigate to homepage
-2. Enter non-numeric value in quantity field (e.g., 'abc', '', '2.5')
-3. Click 'Add to Cart'
-4. Application crashes with ValueError: invalid literal for int()
-
-**Expected Behaviour**: Should validate input and display error message for non-integer quantities
-**Actual Behaviour**: Unhandled ValueError exception causes 500 Internal Server Error
-**Priority**: High
-**Fix Status**: Pending
-**Related Tests**: 
-- `test_add_book_with_string_quantity`
-- `test_add_book_with_empty_quantity`
-- `test_add_book_with_float_string`
+**Fix Status**: Fixed - 12th October 2025
+**Fix Description**: Normalised all email inputs to lowercase using `.lower().strip()` in both `register()` and `login()` routes. Email is now converted to lowercase immediately after retrieval from form, ensuring consistent storage and lookup regardless of case entered by user.
 
 ---
 

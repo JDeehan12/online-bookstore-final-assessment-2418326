@@ -274,7 +274,7 @@ def order_confirmation(order_id):
 def register():
     """User registration"""
     if request.method == 'POST':
-        email = request.form.get('email')
+        email = request.form.get('email').lower().strip() if request.form.get('email') else ''
         password = request.form.get('password')
         name = request.form.get('name')
         address = request.form.get('address', '')
@@ -308,7 +308,7 @@ def register():
 def login():
     """User login"""
     if request.method == 'POST':
-        email = request.form.get('email')
+        email = request.form.get('email').lower().strip() if request.form.get('email') else ''
         password = request.form.get('password')
         
         user = users.get(email)
