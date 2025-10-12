@@ -200,10 +200,10 @@ def process_checkout():
         flash('Invalid discount code', 'error')
     
     required_fields = ['name', 'email', 'address', 'city', 'zip_code']
-    for field in required_fields:
-        if not shipping_info.get(field):
-            flash(f'Please fill in the {field.replace("_", " ")} field', 'error')
-            return redirect(url_for('checkout'))
+    missing_fields = [field.replace("_", " ") for field in required_fields if not shipping_info.get(field)]
+    if missing_fields:
+        flash(f'Please fill in: {", ".join(missing_fields)}', 'error')
+        return redirect(url_for('checkout'))
     
     if payment_info['payment_method'] == 'credit_card':
         if not payment_info.get('card_number') or not payment_info.get('expiry_date') or not payment_info.get('cvv'):
