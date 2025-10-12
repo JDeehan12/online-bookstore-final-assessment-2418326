@@ -94,11 +94,9 @@ class User:
     
     def add_order(self, order):
         self.orders.append(order)
-        self.orders.sort(key=lambda x: x.order_date)
     
     def get_order_history(self):
-        return [order for order in self.orders]
-
+        return sorted(self.orders, key=lambda x: x.order_date)
 
 class Order:
     """Order management class"""

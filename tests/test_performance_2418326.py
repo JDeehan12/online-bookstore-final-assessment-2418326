@@ -122,6 +122,31 @@ class TestUserPerformance:
         print(f"\nAverage order history retrieval: {avg_time:.6f} seconds")
         print("Note: Creates new list each time instead of returning reference")
 
+    def test_user_add_order_efficiency_comparison(self, test_user):
+        """Compare performance of add_order with and without sorting."""
+        import timeit
+        
+        # Test current implementation (no sorting on add)
+        num_orders = 100
+        
+        start_time = timeit.default_timer()
+        for i in range(num_orders):
+            order = Order(f"ORD{i:03d}", test_user.email, [], {}, {}, 50.0)
+            test_user.add_order(order)
+        add_time = timeit.default_timer() - start_time
+        
+        # Test sorting on retrieval
+        start_time = timeit.default_timer()
+        history = test_user.get_order_history()
+        retrieve_time = timeit.default_timer() - start_time
+        
+        print(f"\nAdding {num_orders} orders: {add_time:.6f} seconds")
+        print(f"Retrieving sorted history: {retrieve_time:.6f} seconds")
+        print(f"Total time: {(add_time + retrieve_time):.6f} seconds")
+        print(f"\nBefore fix: Sorting happened {num_orders} times (once per add)")
+        print(f"After fix: Sorting happens 1 time (only when retrieving)")
+        print(f"Orders are correctly sorted: {all(history[i].order_date <= history[i+1].order_date for i in range(len(history)-1))}")
+
 
 class TestComparisonBeforeOptimisation:
     """Baseline performance measurements before optimisation."""
