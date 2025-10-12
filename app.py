@@ -7,6 +7,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from models import Book, Cart, User, Order, PaymentGateway, EmailService
 import uuid
 import os
+import re
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')  # Required for session management
@@ -34,13 +35,16 @@ def get_book_by_title(title):
     """Helper function to find a book by title"""
     return next((book for book in BOOKS if book.title == title), None)
 
+def is_valid_email(email):
+    """Validate email format using regex"""
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
 
 def get_current_user():
     """Helper function to get current logged-in user"""
     if 'user_email' in session:
         return users.get(session['user_email'])
     return None
-
 
 def login_required(f):
     """Decorator to require login for certain routes"""
@@ -278,6 +282,10 @@ def register():
         # Validate required fields
         if not email or not password or not name:
             flash('Please fill in all required fields', 'error')
+            return render_template('register.html')
+        
+        if not is_valid_email(email):
+            flash('Please enter a valid email address', 'error')
             return render_template('register.html')
         
         if email in users:

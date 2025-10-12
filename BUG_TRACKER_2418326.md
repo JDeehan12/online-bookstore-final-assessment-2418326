@@ -87,7 +87,8 @@
 **Expected Behaviour**: Should validate email format using standard email validation
 **Actual Behaviour**: Accepts any string as email address
 **Priority**: Medium
-**Fix Status**: Pending
+**Fix Status**: Fixed - 12th October 2025
+**Fix Description**: Added `is_valid_email()` helper function using regex pattern `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$` to validate email format. Validation occurs after required fields check but before duplicate check in `register()` route. Invalid formats now rejected with clear error message.
 
 ---
 
