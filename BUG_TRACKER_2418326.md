@@ -228,7 +228,8 @@
 **Impact**: Import overhead on every payment processing call
 **Expected Approach**: Move imports to top of models.py file
 **Priority**: Low
-**Fix Status**: Pending
+**Fix Status**: Fixed - 10th October 2025 (as part of SECURITY-003)
+**Fix Description**: When fixing SECURITY-003, replaced `random` with `secrets` and moved all imports (secrets, time, datetime) to module level (lines 6-8). Eliminated import overhead on every payment processing call.
 
 ---
 
