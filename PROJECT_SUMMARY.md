@@ -64,14 +64,14 @@
    - Linear search instead of using helper functions
    - Unnecessary sorting on every operation
    - Multiple imports and unused variables
-
+   - 
 4. **Security Vulnerabilities**
    - ~~Debug mode enabled (FIXED - 10th October 2025)~~
    - ~~Hardcoded secret key (FIXED - 10th October 2025)~~
    - ~~Weak random number generator for transactions (FIXED - 10th October 2025)~~
-   - Plain text password storage
-   - Case-sensitive email checking (allows duplicates)
-   - Missing input sanitisation
+   - ~~Plain text password storage (FIXED - 13th October 2025)~~
+   - ~~Case-sensitive email checking (FIXED - 12th October 2025)~~
+   - ~~Missing input sanitisation (FIXED - 13th October 2025)~~
 
 ---
 

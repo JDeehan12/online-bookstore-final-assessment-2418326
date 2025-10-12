@@ -40,6 +40,23 @@ def is_valid_email(email):
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
 
+def sanitise_text_input(text, max_length=500):
+    """Sanitise text input by removing control characters and limiting length"""
+    if not text:
+        return text
+    
+    # Strip whitespace
+    text = text.strip()
+    
+    # Remove control characters (except newlines/tabs for addresses)
+    text = ''.join(char for char in text if char.isprintable() or char in '\n\t')
+    
+    # Limit length
+    if len(text) > max_length:
+        text = text[:max_length]
+    
+    return text
+
 def get_current_user():
     """Helper function to get current logged-in user"""
     if 'user_email' in session:
@@ -168,11 +185,11 @@ def process_checkout():
     
     # Get form data
     shipping_info = {
-        'name': request.form.get('name'),
+        'name': sanitise_text_input(request.form.get('name')),
         'email': request.form.get('email'),
-        'address': request.form.get('address'),
-        'city': request.form.get('city'),
-        'zip_code': request.form.get('zip_code')
+        'address': sanitise_text_input(request.form.get('address'), max_length=1000),
+        'city': sanitise_text_input(request.form.get('city')),
+        'zip_code': sanitise_text_input(request.form.get('zip_code'), max_length=20)
     }
     
     payment_info = {
@@ -272,8 +289,8 @@ def register():
     if request.method == 'POST':
         email = request.form.get('email').lower().strip() if request.form.get('email') else ''
         password = request.form.get('password')
-        name = request.form.get('name')
-        address = request.form.get('address', '')
+        name = sanitise_text_input(request.form.get('name'))
+        address = sanitise_text_input(request.form.get('address', ''), max_length=1000)
         
         # Validate required fields
         if not email or not password or not name:
@@ -340,8 +357,8 @@ def update_profile():
     """Update user profile"""
     current_user = get_current_user()
     
-    current_user.name = request.form.get('name', current_user.name)
-    current_user.address = request.form.get('address', current_user.address)
+    current_user.name = sanitise_text_input(request.form.get('name', current_user.name))
+    current_user.address = sanitise_text_input(request.form.get('address', current_user.address), max_length=1000)
     
     new_password = request.form.get('new_password')
     if new_password:

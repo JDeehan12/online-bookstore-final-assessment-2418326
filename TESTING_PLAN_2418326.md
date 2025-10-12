@@ -86,20 +86,19 @@ Comprehensive testing, bug identification, performance optimisation, and CI/CD i
 
 **Progress**: 130/130 tests passing
 
-### Phase 2.5: Additional Security Fixes (12th October 2025)
-**Status**: In Progress
+### Phase 2.5: Additional Security Fixes (12th-13th October 2025)
+**Status**: Complete
 
 **SECURITY-004**: Plain text password storage
-- Add bcrypt to requirements.txt
-- Implement password hashing in User class
-- Update registration, login, profile update routes
-- Fix affected authentication tests
+- Added bcrypt==4.1.1 to requirements.txt
+- Implemented password hashing in User class with `_hash_password()` and `verify_password()` methods
+- Updated registration, login, profile update routes
+- Fixed 2 affected authentication tests
 
 **SECURITY-005**: Input sanitisation
-- Review and enhance input validation
-- Add explicit sanitisation where needed
-
-**Progress**: 19/21 issues fixed (90% → 100% when complete)
+- Added `sanitise_text_input()` helper function
+- Applied to name and address fields across register, checkout, and profile routes
+- Removes control characters, strips whitespace, limits length
 
 ### Phase 3: Bug Fixes & Optimisation
 - [x] Fix critical bugs

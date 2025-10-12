@@ -1,11 +1,5 @@
 # Bug Tracking Document - Student 2418326
 
-## Summary Status
-- **Total Issues Identified**: 21
-- **Fixed**: 19
-- **Pending**: 2 (SECURITY-004, SECURITY-005)
-- **Test Pass Rate**: 130/130
-
 ---
 
 ## Functional Bugs
@@ -293,7 +287,8 @@
 **Issue**: Passwords stored without hashing
 **Expected Behaviour**: Use bcrypt for password hashing
 **Impact**: Requires bcrypt library addition, affects User class and all authentication routes
-**Fix Status**: Pending
+**Fix Status**: Fixed - 13th October 2025
+**Fix Description**: Implemented bcrypt password hashing in User class. Added `_hash_password()` method to hash passwords on creation and `verify_password()` method for authentication. Updated `login()` route to use `verify_password()` and `update_profile()` route to hash new passwords. Fixed 2 unit tests to use `verify_password()` instead of direct password comparison. All passwords now stored as bcrypt hashes.
 
 ---
 
@@ -305,7 +300,8 @@
 **Priority**: Medium
 **Issue**: Relying on default Flask escaping, no explicit sanitisation
 **Expected Behaviour**: Explicit input validation and sanitisation
-**Fix Status**: Pending
+**Fix Status**: Fixed - 13th October 2025
+**Fix Description**: Added `sanitise_text_input()` helper function to remove control characters, strip whitespace, and limit text length. Applied to name and address fields in `register()`, `process_checkout()`, and `update_profile()` routes.
 
 ---
 
