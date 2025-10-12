@@ -6,10 +6,11 @@ Comprehensive testing, bug identification, performance optimisation, and CI/CD i
 ## Testing Phases
 
 ### Phase 1: Test Infrastructure Setup
-- [ ] Unit tests for models.py
-- [ ] Unit tests for app.py routes
-- [ ] Integration tests for user workflows
-- [ ] Performance profiling setup
+- [x] Unit tests for models.py
+- [x] Unit tests for app.py routes
+- [x] Integration tests for user workflows
+- [x] Performance profiling setup
+- **Status**: Complete - 130 tests across 5 test files
 
 ### Phase 2: Bug Discovery & Documentation
 - [x] Systematic functional testing
@@ -18,11 +19,11 @@ Comprehensive testing, bug identification, performance optimisation, and CI/CD i
 - [x] Bug reproduction documentation
 - **Status**: Complete - All bugs documented in BUG_TRACKER_2418326.md
 
-### Phase 2.1: Security Fixes (Added 10th October 2025)
+### Phase 2.1: Security Fixes (10th October 2025)
 - [x] SECURITY-001: Disable debug mode
 - [x] SECURITY-002: Environment variable secret key
 - [x] SECURITY-003: Secure random generator for transactions
-- **Status**: Complete - 3/3 security issues resolved
+- **Status**: Complete - 3/3 initial security issues resolved
 
 ### Phase 2.2: Test Quality Improvement (10th October 2025)
 **Status**: Complete
@@ -53,35 +54,69 @@ Comprehensive testing, bug identification, performance optimisation, and CI/CD i
 - Changed from searching for flash message text to verifying order confirmation
 - More reliable test that checks actual functionality
 
-**Progress**: 126/130 tests passing (4 instructor bugs remaining to identify)
+**Progress**: 130/130 tests passing
+
+### Phase 2.4: Email Validation & Performance Fixes (12th October 2025)
+**Status**: Complete
+
+**BUG-005**: No email format validation
+- Added `is_valid_email()` helper function with regex validation
+
+**BUG-006**: Case-sensitive email duplicate check
+- Normalised emails to lowercase in register() and login()
+
+**INEFFICIENCY-001**: Nested loop in cart price calculation
+- Replaced with direct multiplication
+- Performance improvement: 79x-446x faster
+
+**INEFFICIENCY-002**: Unused user attributes
+- Removed temp_data and cache
+- Memory reduction: 28.6%
+
+**INEFFICIENCY-003**: Sorting on every order addition
+- Moved sorting to retrieval only
+
+**INEFFICIENCY-004**: Manual loop vs helper function
+- Replaced with get_book_by_title() call
+- Code reduction: 80%
+
+**INEFFICIENCY-006**: Loop-based field validation
+- List comprehension shows all errors at once
+- Better UX
+
+**Progress**: 130/130 tests passing
+
+### Phase 2.5: Additional Security Fixes (12th October 2025)
+**Status**: In Progress
+
+**SECURITY-004**: Plain text password storage
+- Add bcrypt to requirements.txt
+- Implement password hashing in User class
+- Update registration, login, profile update routes
+- Fix affected authentication tests
+
+**SECURITY-005**: Input sanitisation
+- Review and enhance input validation
+- Add explicit sanitisation where needed
+
+**Progress**: 19/21 issues fixed (90% → 100% when complete)
 
 ### Phase 3: Bug Fixes & Optimisation
-- [ ] Fix critical bugs
-- [ ] Implement performance improvements
-- [ ] Before/after metrics collection
-- [ ] Code quality improvements
+- [x] Fix critical bugs
+- [x] Implement performance improvements
+- [x] Before/after metrics collection
+- [x] Code quality improvements
+- **Status**: Complete - All functional bugs and inefficiencies fixed
 
 ### Phase 4: CI/CD Implementation
-- [ ] GitHub Actions workflow setup
-- [ ] Automated test execution
-- [ ] Test coverage reporting
-- [ ] Build status badges
+- [x] GitHub Actions workflow setup
+- [x] Automated test execution
+- [x] Test coverage reporting
+- [x] Build status badges
+- **Status**: Complete - Pipeline running successfully
 
 ### Phase 5: Final Report
 - [ ] Testing strategy documentation
 - [ ] Bug analysis and fixes
 - [ ] Performance improvements
 - [ ] CI/CD evaluation
-
-## Timeline
-Start Date: 3rd October 2025
-Deadline: 20th October 2025 (14:00 UK Time)
-Duration: 17 days
-
-## Success Criteria
-Target: 90%+ (80-100 band)
-- Comprehensive test coverage
-- All critical bugs fixed
-- Measurable performance improvements
-- Functioning CI/CD pipeline
-- Professional 1500-word report
