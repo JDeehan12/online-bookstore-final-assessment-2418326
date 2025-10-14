@@ -339,6 +339,24 @@
 
 ---
 
-**Document Version**: 2.0  
-**Last Updated**: 12th October 2025, 23:45  
-**Student**: 2418326
+### [PERFORMANCE-007] Flask Development Server Capacity Limit
+**Status**: Documented (Infrastructure Limitation)
+**Location**: Flask built-in development server
+**Discovered**: Locust load testing - 14th October 2025
+**Priority**: Low
+**Issue**: Development server reaches capacity at approximately 80-100 concurrent users
+**Impact**: 17.9% failure rate at 100 concurrent users due to Windows socket exhaustion
+**Expected Behaviour**: Application should handle 100+ concurrent users without failures
+**Actual Behaviour**: Socket exhaustion (OSError 10048) occurs at high concurrent load on Windows
+**Root Cause**: Flask development server limitation, not application code issue
+
+**Test Results:**
+- 10 users: 563 requests, 0 failures (0%), 11.14ms average response
+- 50 users: 6,836 requests, 0 failures (0%), 16.54ms average response
+- 100 users: 13,775 requests, 2,468 failures (17.9%), 13.52ms average response
+
+**Issue**: Application code performs excellently with consistent sub-20ms response times. Failures are purely infrastructure-related (Windows socket limits + Flask development server). This is expected behaviour and documented in Flask documentation.
+
+**Fix Description**: No code changes required. For production deployment, use production WSGI server (Gunicorn/uWSGI) with reverse proxy (Nginx/Apache). Current development setup safely supports 50-75 concurrent users.
+
+---
