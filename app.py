@@ -37,7 +37,11 @@ def get_book_by_title(title):
 
 def is_valid_email(email):
     """Validate email format using regex"""
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not email:
+        return False
+    
+    # More strict pattern requiring valid TLD
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
 
 def sanitise_text_input(text, max_length=500):
@@ -173,7 +177,25 @@ def checkout():
     
     current_user = get_current_user()
     total_price = cart.get_total_price()
-    return render_template('checkout.html', cart=cart, total_price=total_price, current_user=current_user)
+    
+    # Get preserved form data and discount from session
+    form_data = session.get('form_data', {})
+    discount_info = session.get('discount_info', None)
+    
+    # Clear form_data if coming from navigation (not from validation redirect)
+    # Check if there are any flash messages - if not, this is a fresh visit
+    messages = session.get('_flashes', [])
+    if not messages:
+        # Fresh visit - clear old form data but preserve discount
+        session.pop('form_data', None)
+        form_data = {}
+    
+    return render_template('checkout.html', 
+                         cart=cart, 
+                         total_price=total_price,
+                         discount_info=discount_info,
+                         current_user=current_user,
+                         form_data=form_data)
 
 
 @app.route('/process-checkout', methods=['POST'])
@@ -201,30 +223,183 @@ def process_checkout():
     
     discount_code = request.form.get('discount_code', '').strip()
 
-    # Calculate total with discount
+    # STEP 1: Check if this is ONLY a discount application (no payment info filled)
+    # If user hasn't filled payment fields, they're just applying discount
+    payment_fields_filled = payment_info.get('card_number') or payment_info.get('paypal_email')
+    
+    # If discount code provided AND no payment info, just apply discount and redirect
+    if discount_code and not payment_fields_filled:
+        # User is just applying discount without completing other fields
+        total_amount = cart.get_total_price()
+        discount_applied = 0
+        discount_percentage = 0
+        
+        if discount_code.upper() == 'SAVE10':
+            discount_percentage = 10
+            discount_applied = total_amount * 0.10
+        elif discount_code.upper() == 'WELCOME20':
+            discount_percentage = 20
+            discount_applied = total_amount * 0.20
+        else:
+            # Invalid discount code
+            flash('Invalid discount code', 'error')
+            session['form_data'] = {
+                'name': shipping_info.get('name', ''),
+                'email': shipping_info.get('email', ''),
+                'address': shipping_info.get('address', ''),
+                'city': shipping_info.get('city', ''),
+                'zip_code': shipping_info.get('zip_code', '')
+            }
+            session.pop('discount_info', None)
+            return redirect(url_for('checkout'))
+        
+        # Valid discount - store and redirect back to checkout
+        session['discount_info'] = {
+            'code': discount_code.upper(),
+            'percentage': discount_percentage,
+            'amount': discount_applied,
+            'discounted_total': total_amount - discount_applied
+        }
+        session['form_data'] = {
+            'name': shipping_info.get('name', ''),
+            'email': shipping_info.get('email', ''),
+            'address': shipping_info.get('address', ''),
+            'city': shipping_info.get('city', ''),
+            'zip_code': shipping_info.get('zip_code', '')
+        }
+        flash(f'Discount code "{discount_code.upper()}" applied! You saved ${discount_applied:.2f}', 'success')
+        return redirect(url_for('checkout'))
+    
+    # STEP 2: Calculate total with discount (if provided with full form OR previously applied)
     total_amount = cart.get_total_price()
     discount_applied = 0
+    discount_percentage = 0
 
-    if discount_code.upper() == 'SAVE10':
-        discount_applied = total_amount * 0.10
-        total_amount -= discount_applied
-        flash(f'Discount applied! You saved ${discount_applied:.2f}', 'success')
-    elif discount_code.upper() == 'WELCOME20':
-        discount_applied = total_amount * 0.20
-        total_amount -= discount_applied
-        flash(f'Welcome discount applied! You saved ${discount_applied:.2f}', 'success')
-    elif discount_code:
-        flash('Invalid discount code', 'error')
+    # Check if all required shipping fields are filled
+    required_fields = ['name', 'email', 'address', 'city', 'zip_code']
+    missing_fields = [field for field in required_fields if not shipping_info.get(field)]
+
+    if discount_code and not missing_fields:
+        # User is completing checkout with discount code
+        if discount_code.upper() == 'SAVE10':
+            discount_percentage = 10
+            discount_applied = total_amount * 0.10
+            total_amount -= discount_applied
+        elif discount_code.upper() == 'WELCOME20':
+            discount_percentage = 20
+            discount_applied = total_amount * 0.20
+            total_amount -= discount_applied
+        else:
+            # Invalid discount code during full checkout
+            flash('Invalid discount code', 'error')
+            session['form_data'] = {
+                'name': shipping_info.get('name', ''),
+                'email': shipping_info.get('email', ''),
+                'address': shipping_info.get('address', ''),
+                'city': shipping_info.get('city', ''),
+                'zip_code': shipping_info.get('zip_code', '')
+            }
+            session.pop('discount_info', None)
+            return redirect(url_for('checkout'))
+        
+        # Store valid discount
+        session['discount_info'] = {
+            'code': discount_code.upper(),
+            'percentage': discount_percentage,
+            'amount': discount_applied,
+            'discounted_total': total_amount
+        }
+    elif 'discount_info' in session:
+        # Use previously applied discount
+        discount_info = session['discount_info']
+        discount_applied = discount_info['amount']
+        total_amount = discount_info['discounted_total']
     
+    # STEP 3: Validate shipping information
     required_fields = ['name', 'email', 'address', 'city', 'zip_code']
     missing_fields = [field.replace("_", " ") for field in required_fields if not shipping_info.get(field)]
     if missing_fields:
         flash(f'Please fill in: {", ".join(missing_fields)}', 'error')
+        session['form_data'] = {
+            'name': shipping_info.get('name', ''),
+            'email': shipping_info.get('email', ''),
+            'address': shipping_info.get('address', ''),
+            'city': shipping_info.get('city', ''),
+            'zip_code': shipping_info.get('zip_code', '')
+        }
         return redirect(url_for('checkout'))
     
+    # Validate email format
+    if not is_valid_email(shipping_info.get('email', '')):
+        flash('Please enter a valid email address', 'error')
+        session['form_data'] = {
+            'name': shipping_info.get('name', ''),
+            'email': shipping_info.get('email', ''),
+            'address': shipping_info.get('address', ''),
+            'city': shipping_info.get('city', ''),
+            'zip_code': shipping_info.get('zip_code', '')
+        }
+        return redirect(url_for('checkout'))
+    
+    # Validate name length (minimum 2 characters)
+    if len(shipping_info.get('name', '')) < 2:
+        flash('Please enter a valid name (at least 2 characters)', 'error')
+        session['form_data'] = {
+            'name': shipping_info.get('name', ''),
+            'email': shipping_info.get('email', ''),
+            'address': shipping_info.get('address', ''),
+            'city': shipping_info.get('city', ''),
+            'zip_code': shipping_info.get('zip_code', '')
+        }
+        return redirect(url_for('checkout'))
+    
+    # Validate city length (minimum 2 characters)
+    if len(shipping_info.get('city', '')) < 2:
+        flash('Please enter a valid city name (at least 2 characters)', 'error')
+        session['form_data'] = {
+            'name': shipping_info.get('name', ''),
+            'email': shipping_info.get('email', ''),
+            'address': shipping_info.get('address', ''),
+            'city': shipping_info.get('city', ''),
+            'zip_code': shipping_info.get('zip_code', '')
+        }
+        return redirect(url_for('checkout'))
+    
+    # Validate address length (minimum 5 characters for street address)
+    if len(shipping_info.get('address', '')) < 5:
+        flash('Please enter a complete street address (at least 5 characters)', 'error')
+        session['form_data'] = {
+            'name': shipping_info.get('name', ''),
+            'email': shipping_info.get('email', ''),
+            'address': shipping_info.get('address', ''),
+            'city': shipping_info.get('city', ''),
+            'zip_code': shipping_info.get('zip_code', '')
+        }
+        return redirect(url_for('checkout'))
+    
+    # Validate zip code length (keep flexible for international - just minimum 3 characters)
+    if len(shipping_info.get('zip_code', '')) < 3:
+        flash('Please enter a valid postal/zip code (at least 3 characters)', 'error')
+        session['form_data'] = {
+            'name': shipping_info.get('name', ''),
+            'email': shipping_info.get('email', ''),
+            'address': shipping_info.get('address', ''),
+            'city': shipping_info.get('city', ''),
+            'zip_code': shipping_info.get('zip_code', '')
+        }
+        return redirect(url_for('checkout'))
+    
+    # STEP 4: Validate payment information
     if payment_info['payment_method'] == 'credit_card':
         if not payment_info.get('card_number') or not payment_info.get('expiry_date') or not payment_info.get('cvv'):
             flash('Please fill in all credit card details', 'error')
+            session['form_data'] = {
+                'name': shipping_info.get('name', ''),
+                'email': shipping_info.get('email', ''),
+                'address': shipping_info.get('address', ''),
+                'city': shipping_info.get('city', ''),
+                'zip_code': shipping_info.get('zip_code', '')
+            }
             return redirect(url_for('checkout'))
     
     # Process payment through mock gateway
@@ -232,6 +407,13 @@ def process_checkout():
     
     if not payment_result['success']:
         flash(payment_result['message'], 'error')
+        session['form_data'] = {
+            'name': shipping_info.get('name', ''),
+            'email': shipping_info.get('email', ''),
+            'address': shipping_info.get('address', ''),
+            'city': shipping_info.get('city', ''),
+            'zip_code': shipping_info.get('zip_code', '')
+        }
         return redirect(url_for('checkout'))
     
     # Create order
@@ -259,8 +441,10 @@ def process_checkout():
     # Send confirmation email (mock)
     EmailService.send_order_confirmation(shipping_info['email'], order)
     
-    # Clear cart
+    # Clear cart and session data
     cart.clear()
+    session.pop('form_data', None)
+    session.pop('discount_info', None)
     
     # Store order in session for confirmation page
     session['last_order_id'] = order_id

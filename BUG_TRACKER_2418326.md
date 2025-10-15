@@ -160,6 +160,23 @@
 
 ---
 
+### [BUG-010] Discount Code Workflow UX Issue
+**Status**: Fixed
+**Location**: `app.py` - `process_checkout()` and `checkout()` routes; `templates/checkout.html`
+**Discovered**: Exploratory testing - 15th October 2025
+**Priority**: Medium
+**Reproduction Steps**:
+1. Navigate to checkout with items in cart
+2. Enter valid discount code
+3. Observe discount not applied until all fields completed
+
+**Expected Behaviour**: Discount code should apply independently of other form fields, with immediate visual feedback on checkout page
+**Actual Behaviour**: Discount required all shipping/payment fields completed before applying; form fields cleared on validation errors; discount only visible on order confirmation
+**Fix Status**: Fixed - 15th October 2025
+**Fix Description**: Modified `process_checkout()` to apply discount based on payment field missing rather than shipping field completeness. Added  shipping field validation (email format with TLD requirement, minimum lengths). Updated `checkout.html` to display discount breakdown on checkout page. All form fields now persist through validation errors.
+
+---
+
 ## Performance Inefficiencies
 
 ### [INEFFICIENCY-001] Cart Price Calculation Using Nested Loop

@@ -120,6 +120,18 @@ Comprehensive testing, bug identification, performance optimisation, and CI/CD i
 
 **Progress**: Load testing validated application performance. Recommended capacity: 50-75 concurrent users for development environment.
 
+### Phase 2.7: UX Improvement - Discount Code Workflow (15th October 2025)
+**Status**: Complete
+
+**BUG-010**: Discount Code Workflow UX Issue
+- Modified discount application to work independently of form fields
+- Implemented session-based storage for form data and discount info
+- Added comprehensive shipping field validation (email, name, address, city, zip)
+- Strengthened email validation regex to require valid TLD
+- Updated checkout template to show discount breakdown and preserve field values
+
+**Progress**: 130/130 tests passing
+
 ### Phase 3: Bug Fixes & Optimisation
 - [x] Fix critical bugs
 - [x] Implement performance improvements

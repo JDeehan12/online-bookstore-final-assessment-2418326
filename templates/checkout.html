@@ -1,3 +1,7 @@
+<!--
+Student 2418326
+checkout.html
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,12 +73,20 @@
                         
                         <div class="discount-section">
                             <label for="discount_code">Discount Code:</label>
-                            <input type="text" id="discount_code" name="discount_code" placeholder="Enter discount code (try SAVE10 or WELCOME20)">
+                            <input type="text" id="discount_code" name="discount_code" 
+                                   placeholder="Enter discount code (try SAVE10 or WELCOME20)"
+                                   value="{{ discount_info.code if discount_info else '' }}">
                         </div>
                         
                         <div class="order-total">
                             <p><strong>Total Items: {{ cart.get_total_items() }}</strong></p>
+                            {% if discount_info %}
+                            <p><strong>Subtotal: ${{ "%.2f"|format(total_price) }}</strong></p>
+                            <p class="discount-applied" style="color: green;"><strong>Discount ({{ discount_info.code }} - {{ discount_info.percentage }}%): -${{ "%.2f"|format(discount_info.amount) }}</strong></p>
+                            <p class="final-total"><strong>Total: ${{ "%.2f"|format(discount_info.discounted_total) }}</strong></p>
+                            {% else %}
                             <p class="final-total"><strong>Total: ${{ "%.2f"|format(total_price) }}</strong></p>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -84,26 +96,26 @@
                         <div class="form-group">
                             <label for="name">Full Name *</label>
                             <input type="text" id="name" name="name" required 
-                                   value="{{ current_user.name if current_user else '' }}">
+                                   value="{{ form_data.get('name', current_user.name if current_user else '') }}">
                         </div>
                         <div class="form-group">
                             <label for="email">Email Address *</label>
                             <input type="email" id="email" name="email" required 
-                                   value="{{ current_user.email if current_user else '' }}">
+                                   value="{{ form_data.get('email', current_user.email if current_user else '') }}">
                         </div>
                         <div class="form-group">
                             <label for="address">Street Address *</label>
                             <input type="text" id="address" name="address" required 
-                                   value="{{ current_user.address if current_user else '' }}">
+                                   value="{{ form_data.get('address', current_user.address if current_user else '') }}">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="city">City *</label>
-                                <input type="text" id="city" name="city" required>
+                                <input type="text" id="city" name="city" required value="{{ form_data.get('city', '') }}">
                             </div>
                             <div class="form-group">
                                 <label for="zip_code">ZIP Code *</label>
-                                <input type="text" id="zip_code" name="zip_code" required>
+                                <input type="text" id="zip_code" name="zip_code" required value="{{ form_data.get('zip_code', '') }}">
                             </div>
                         </div>
                     </div>
